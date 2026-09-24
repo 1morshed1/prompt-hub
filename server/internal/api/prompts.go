@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/1morshed1/prompt-hub/server/internal/model"
 )
@@ -30,6 +31,12 @@ func (s *Server) createPrompt(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.Name == "" {
 		writeError(w, http.StatusBadRequest, "name is required")
+		return
+	}
+	// Names appear as a single path segment in routes, so a slash would break
+	// routing. Reject it early with a clear message rather than 404ing later.
+	if strings.ContainsAny(req.Name, "/ ") {
+		writeError(w, http.StatusBadRequest, "name must not contain spaces or '/'")
 		return
 	}
 	p, err := s.store.CreatePrompt(r.Context(), model.Prompt{
