@@ -48,21 +48,59 @@ prompt-hub/
 
 ## Quick start
 
+**With Docker (one command):**
+
 ```bash
-# 1. Start a local Postgres and create the database (see scripts/dev_db.sh)
-./scripts/dev_db.sh start
-
-# 2. Run the server (applies migrations on boot)
-cd server
-export DATABASE_URL="postgres://postgres@localhost:5433/prompthub?sslmode=disable"
-go run ./cmd/server
-
-# 3. Open the dashboard
-#    http://localhost:8080/  (served by the same Go process)
+docker compose up --build      # Postgres + server, dashboard at http://localhost:8080
+python3 scripts/seed.py        # (optional) seed demo data + drive an A/B test
 ```
 
+**Locally (no Docker):**
+
+```bash
+./scripts/dev_db.sh start      # throwaway local Postgres on :5433 (no root, no Docker)
+make run                       # runs the server; applies migrations; serves API + dashboard
+# in another shell:
+python3 scripts/seed.py        # seed demo data
+open http://localhost:8080/    # the dashboard
+```
+
+`make help` lists every developer command (run, build, test, seed, docker-up, …).
+
 See [`docs/learning/01-getting-started.md`](docs/learning/01-getting-started.md) for the
-full walkthrough, including seeding demo data and driving an A/B test end to end.
+full walkthrough, including driving an A/B test end to end.
+
+## Tests
+
+```bash
+make test        # Go tests (unit + DB integration) and the Python SDK tests
+```
+
+Go integration tests need a database — set `TEST_DATABASE_URL` (the Makefile
+defaults it to the local `scripts/dev_db.sh` instance's `prompthub_test`). Pure
+unit tests (template engine, statistics, diff) run with no database.
+
+## Learn the codebase (start here)
+
+This repo is meant to be *read*. The [`docs/learning/`](docs/learning/) folder is a
+short course, one file per subsystem:
+
+| # | Doc | Teaches |
+|---|-----|---------|
+| 00 | [overview](docs/learning/00-overview.md) | the mental model for the whole system |
+| 01 | [getting started](docs/learning/01-getting-started.md) | run it, seed it, drive an A/B test |
+| 02 | [architecture](docs/learning/02-architecture.md) | how the packages fit; a request's lifecycle |
+| 03 | [database design](docs/learning/03-database-design.md) | the schema, immutable versions, tag constraints |
+| 04 | [template engine](docs/learning/04-template-engine.md) | lexer → parser → evaluator, from scratch |
+| 05 | [versioning & diff](docs/learning/05-versioning-and-diff.md) | immutable versions, tags, rollback, LCS diff |
+| 06 | [A/B testing & stats](docs/learning/06-ab-testing-and-stats.md) | chi-squared + Mann-Whitney U, explained |
+| 07 | [Python SDK](docs/learning/07-python-sdk.md) | designing an ergonomic client library |
+| 08 | [dashboard](docs/learning/08-dashboard.md) | a buildless SPA over the JSON API |
+
+The **why** behind each major choice is argued in
+[`docs/decisions/`](docs/decisions/) (Architecture Decision Records). The full HTTP
+surface is in [`docs/api-reference.md`](docs/api-reference.md). The git history is
+also part of the material: each commit ships one subsystem with its learning doc.
 
 ## Tech choices at a glance
 

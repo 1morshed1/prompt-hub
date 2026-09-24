@@ -80,8 +80,8 @@ func (e *Engine) evalFor(b *strings.Builder, node ForNode, ctx map[string]any, d
 		scope := childScope(ctx)
 		scope[node.Var] = item
 		scope["loop"] = map[string]any{
-			"index":  float64(i),      // 0-based
-			"index1": float64(i + 1),  // 1-based
+			"index":  float64(i),     // 0-based
+			"index1": float64(i + 1), // 1-based
 			"first":  i == 0,
 			"last":   i == len(list)-1,
 		}

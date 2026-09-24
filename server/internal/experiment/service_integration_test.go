@@ -52,7 +52,7 @@ func TestFullExperimentFlow(t *testing.T) {
 	logArm := func(arm, versionID string, n, up, latency int) {
 		for i := 0; i < n; i++ {
 			reqID := uuid()
-			if err := s.RecordUsage(ctx, model.Result{PromptID: p.ID, 
+			if err := s.RecordUsage(ctx, model.Result{PromptID: p.ID,
 				ExperimentID: exp.ID, VersionID: versionID, RequestID: reqID, Arm: arm,
 			}); err != nil {
 				t.Fatalf("record assignment: %v", err)

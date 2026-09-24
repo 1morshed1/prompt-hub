@@ -24,14 +24,14 @@ type renderReq struct {
 // renderResp is the LLM-ready payload plus the bookkeeping the SDK needs to log
 // results back.
 type renderResp struct {
-	PromptName     string            `json:"prompt_name"`
-	VersionNumber  int               `json:"version_number"`
-	System         string            `json:"system"`
-	User           string            `json:"user"`
-	ModelConfig    model.ModelConfig `json:"model_config"`
-	RequestID      string            `json:"request_id"`
-	ExperimentID   string            `json:"experiment_id,omitempty"`
-	Arm            string            `json:"arm,omitempty"`
+	PromptName    string            `json:"prompt_name"`
+	VersionNumber int               `json:"version_number"`
+	System        string            `json:"system"`
+	User          string            `json:"user"`
+	ModelConfig   model.ModelConfig `json:"model_config"`
+	RequestID     string            `json:"request_id"`
+	ExperimentID  string            `json:"experiment_id,omitempty"`
+	Arm           string            `json:"arm,omitempty"`
 }
 
 // render resolves a version, renders its templates against the supplied

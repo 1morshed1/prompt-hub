@@ -181,7 +181,7 @@ func parseExpr(s string) (Expr, error) {
 	return e, nil
 }
 
-func (p *exprParser) cur() exprTok  { return p.toks[p.pos] }
+func (p *exprParser) cur() exprTok     { return p.toks[p.pos] }
 func (p *exprParser) advance() exprTok { t := p.toks[p.pos]; p.pos++; return t }
 
 func (p *exprParser) parseOr() (Expr, error) {

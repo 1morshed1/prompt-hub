@@ -1,0 +1,37 @@
+# One command to run the whole thing: `docker compose up --build`.
+# Brings up PostgreSQL and the PromptHub server (which applies migrations on boot
+# and serves both the API and the dashboard at http://localhost:8080).
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: prompthub
+      POSTGRES_PASSWORD: prompthub
+      POSTGRES_DB: prompthub
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prompthub"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://prompthub:prompthub@db:5432/prompthub?sslmode=disable
+      PORT: "8080"
+      LOG_LEVEL: info
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

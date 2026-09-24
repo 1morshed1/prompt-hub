@@ -11,10 +11,10 @@ import (
 type ArmSummary struct {
 	Arm        string  `json:"arm"`
 	SampleSize int     `json:"sample_size"`
-	RatedCount int     `json:"rated_count"`  // results that carry a user_rating
+	RatedCount int     `json:"rated_count"` // results that carry a user_rating
 	ThumbsUp   int     `json:"thumbs_up"`
 	ThumbsDown int     `json:"thumbs_down"`
-	AvgRating  float64 `json:"avg_rating"`   // up-rate in [0,1]
+	AvgRating  float64 `json:"avg_rating"` // up-rate in [0,1]
 	AvgLatency float64 `json:"avg_latency_ms"`
 	AvgCost    float64 `json:"avg_cost_usd"`
 }
@@ -28,13 +28,13 @@ type Report struct {
 	Variant      ArmSummary `json:"variant"`
 
 	// Rating comparison (chi-squared on thumbs up/down).
-	RatingChiSquared float64 `json:"rating_chi_squared"`
-	RatingPValue     float64 `json:"rating_p_value"`
-	RatingSignificant bool   `json:"rating_significant"`
+	RatingChiSquared  float64 `json:"rating_chi_squared"`
+	RatingPValue      float64 `json:"rating_p_value"`
+	RatingSignificant bool    `json:"rating_significant"`
 
 	// Latency comparison (Mann-Whitney U).
-	LatencyPValue     float64 `json:"latency_p_value"`
-	LatencySignificant bool   `json:"latency_significant"`
+	LatencyPValue      float64 `json:"latency_p_value"`
+	LatencySignificant bool    `json:"latency_significant"`
 
 	Winner         string `json:"winner"` // control | variant | no_winner
 	Recommendation string `json:"recommendation"`

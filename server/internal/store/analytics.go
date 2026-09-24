@@ -11,7 +11,7 @@ type VersionAnalytics struct {
 	Renders       int      `json:"renders"`
 	RatedCount    int      `json:"rated_count"`
 	ThumbsUp      int      `json:"thumbs_up"`
-	AvgRating     *float64 `json:"avg_rating"`      // null until at least one rating exists
+	AvgRating     *float64 `json:"avg_rating"` // null until at least one rating exists
 	AvgLatencyMS  *float64 `json:"avg_latency_ms"`
 	AvgCostUSD    *float64 `json:"avg_cost_usd"`
 	TotalTokens   int      `json:"total_tokens"`

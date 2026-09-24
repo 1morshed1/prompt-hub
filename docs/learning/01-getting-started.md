@@ -53,8 +53,12 @@ Configuration is via environment variables (see `server/internal/config`):
 ## 3. Seed demo data
 
 ```bash
-./scripts/seed.sh      # creates an 'order-assistant' prompt with a few versions + an experiment
+./scripts/seed.sh      # creates an 'order-assistant' prompt (v1..v3), tags, a shared
+                       # include, and an A/B experiment driven to a significant winner
 ```
+
+This uses the Python SDK under the hood (`scripts/seed.py`), so it doubles as a
+worked example of the SDK's management surface.
 
 Then open **http://localhost:8080/** for the dashboard, or hit the API directly:
 
@@ -74,12 +78,13 @@ curl -s -X POST localhost:8080/api/v1/prompts/order-assistant/render \
 # See the experiment the seed script created
 curl -s localhost:8080/api/v1/experiments | jq
 
-# Simulate traffic: each call assigns the request to control or variant and logs a result.
-# (The seed script includes a load generator; or use the SDK — see doc 07.)
-./scripts/simulate_traffic.sh <experiment_id> 500
+# The seed already drove ~300 requests. To add more, simulate traffic for a prompt
+# that has a running experiment (each call assigns an arm and logs a result):
+./scripts/simulate_traffic.sh order-assistant 500
 
-# Ask for the verdict
-curl -s localhost:8080/api/v1/experiments/<experiment_id>/report | jq
+# Ask for the verdict (also triggers auto-promotion if the gates pass)
+EXP=$(curl -s "localhost:8080/api/v1/experiments?prompt=order-assistant" | jq -r '.experiments[0].id')
+curl -s "localhost:8080/api/v1/experiments/$EXP/report" | jq
 ```
 
 The report tells you sample sizes, average rating/latency/cost per arm, the p-values, whether

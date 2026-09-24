@@ -20,7 +20,7 @@ type Prompt struct {
 // version's `variables` JSONB and used by the template engine's validation pass.
 type Variable struct {
 	Name     string `json:"name"`
-	Type     string `json:"type"`              // string | number | boolean | list | object
+	Type     string `json:"type"` // string | number | boolean | list | object
 	Required bool   `json:"required"`
 	Default  any    `json:"default,omitempty"` // used when the caller omits an optional var
 }

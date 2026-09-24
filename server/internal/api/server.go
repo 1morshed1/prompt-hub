@@ -18,11 +18,11 @@ import (
 // so they share the store, experiment service, template engine, and logger
 // without package-level globals.
 type Server struct {
-	store   *store.Store
-	exp     *experiment.Service
-	engine  *template.Engine
-	log     *slog.Logger
-	webDir  string // directory of static dashboard files ("" disables serving)
+	store  *store.Store
+	exp    *experiment.Service
+	engine *template.Engine
+	log    *slog.Logger
+	webDir string // directory of static dashboard files ("" disables serving)
 }
 
 // New builds a Server. The template engine is configured with a database-backed
