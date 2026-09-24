@@ -96,6 +96,7 @@ short course, one file per subsystem:
 | 06 | [A/B testing & stats](docs/learning/06-ab-testing-and-stats.md) | chi-squared + Mann-Whitney U, explained |
 | 07 | [Python SDK](docs/learning/07-python-sdk.md) | designing an ergonomic client library |
 | 08 | [dashboard](docs/learning/08-dashboard.md) | a buildless SPA over the JSON API |
+| 09 | [gotchas & decisions journal](docs/learning/09-gotchas-and-decisions-journal.md) | real bugs hit while building, and the fixes |
 
 The **why** behind each major choice is argued in
 [`docs/decisions/`](docs/decisions/) (Architecture Decision Records). The full HTTP

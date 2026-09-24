@@ -17,6 +17,7 @@ Read them in order:
 | 06 | `06-ab-testing-and-stats.md` | Traffic splitting + chi-squared + Mann-Whitney U |
 | 07 | `07-python-sdk.md` | Designing an ergonomic client library |
 | 08 | `08-dashboard.md` | A zero-build-step dashboard over the JSON API |
+| 09 | `09-gotchas-and-decisions-journal.md` | Real problems hit while building, and how they were fixed |
 
 Decisions (the *why*, argued out) live one folder up in `docs/decisions/` as ADRs.
 
