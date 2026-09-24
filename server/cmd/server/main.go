@@ -1,20 +1,25 @@
 // Command server is the PromptHub API server entrypoint.
 //
 // Boot sequence: load config → connect to Postgres → apply migrations → start
-// the HTTP server. The full HTTP wiring is added in a later step; for now this
-// establishes the boot path (config + db + migrations) so each layer can be
-// verified as it's built.
+// the HTTP server (which also serves the static dashboard). Shuts down gracefully
+// on SIGINT/SIGTERM.
 package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/1morshed1/prompt-hub/server/internal/api"
 	"github.com/1morshed1/prompt-hub/server/internal/config"
 	"github.com/1morshed1/prompt-hub/server/internal/db"
+	"github.com/1morshed1/prompt-hub/server/internal/store"
 )
 
 func main() {
@@ -32,21 +37,69 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	logger := newLogger(cfg.LogLevel)
 
 	pool, err := db.Connect(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return err
 	}
 	defer pool.Close()
-	fmt.Println("connected to database")
+	logger.Info("connected to database")
 
 	if err := db.Migrate(ctx, pool); err != nil {
 		return err
 	}
-	fmt.Println("migrations up to date")
+	logger.Info("migrations up to date")
 
-	// HTTP server wiring is added in the API step. For now, boot succeeds and
-	// exits cleanly, which is enough to verify config + db + migrations.
-	fmt.Println("boot ok (HTTP server wired up in a later step)")
-	return nil
+	// webDir points at the static dashboard; if it doesn't exist we still run the
+	// API (the dashboard is optional).
+	webDir := os.Getenv("WEB_DIR")
+	if webDir == "" {
+		webDir = "../web"
+	}
+	if _, statErr := os.Stat(webDir); statErr != nil {
+		logger.Warn("dashboard directory not found; serving API only", "web_dir", webDir)
+		webDir = ""
+	}
+
+	srv := api.New(store.New(pool), logger, webDir)
+	httpServer := &http.Server{
+		Addr:              ":" + cfg.Port,
+		Handler:           srv.Handler(),
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+
+	// Run the server in a goroutine so we can wait for a shutdown signal.
+	serverErr := make(chan error, 1)
+	go func() {
+		logger.Info("listening", "addr", httpServer.Addr, "dashboard", webDir != "")
+		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serverErr <- err
+		}
+	}()
+
+	select {
+	case err := <-serverErr:
+		return err
+	case <-ctx.Done():
+		logger.Info("shutdown signal received")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		return httpServer.Shutdown(shutdownCtx)
+	}
+}
+
+func newLogger(level string) *slog.Logger {
+	var lvl slog.Level
+	switch level {
+	case "debug":
+		lvl = slog.LevelDebug
+	case "warn":
+		lvl = slog.LevelWarn
+	case "error":
+		lvl = slog.LevelError
+	default:
+		lvl = slog.LevelInfo
+	}
+	return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: lvl}))
 }
