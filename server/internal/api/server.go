@@ -63,6 +63,9 @@ func (s *Server) Handler() http.Handler {
 	// Diff.
 	mux.HandleFunc("GET /api/v1/prompts/{name}/diff", s.diffVersions)
 
+	// Per-version analytics.
+	mux.HandleFunc("GET /api/v1/prompts/{name}/analytics", s.analytics)
+
 	// Render (the serving path).
 	mux.HandleFunc("POST /api/v1/prompts/{name}/render", s.render)
 

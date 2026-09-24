@@ -74,7 +74,8 @@ type Experiment struct {
 // (latency immediately; user_rating possibly minutes later) and may be absent.
 type Result struct {
 	ID            string         `json:"id"`
-	ExperimentID  string         `json:"experiment_id"`
+	PromptID      string         `json:"prompt_id"`
+	ExperimentID  string         `json:"experiment_id"` // empty for renders outside an experiment
 	VersionID     string         `json:"version_id"`
 	RequestID     string         `json:"request_id"`
 	Arm           string         `json:"arm"` // control | variant

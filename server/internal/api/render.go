@@ -57,6 +57,20 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Record this render for analytics — every render, not just experiment ones,
+	// so per-version metrics (latency/cost/satisfaction) can be aggregated later.
+	// experiment_id/arm are set only when an experiment assigned this request.
+	if err := s.store.RecordUsage(r.Context(), model.Result{
+		PromptID:     p.ID,
+		ExperimentID: resp.ExperimentID,
+		VersionID:    version.ID,
+		RequestID:    requestID,
+		Arm:          resp.Arm,
+	}); err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	// Validate caller input against the version's declared variable schema, then
 	// render both templates in the resulting context.
 	ctx, err := template.BuildContext(version.Variables, req.Variables)
@@ -103,11 +117,8 @@ func (s *Server) selectVersion(r *http.Request, p model.Prompt, req *renderReq, 
 		if err != nil {
 			return model.Version{}, err
 		}
-		if err := s.store.RecordAssignment(r.Context(), model.Result{
-			ExperimentID: exp.ID, VersionID: versionID, RequestID: requestID, Arm: arm,
-		}); err != nil {
-			return model.Version{}, err
-		}
+		// The usage row (including this assignment) is recorded once by the
+		// caller after selection; here we only surface the arm/experiment.
 		resp.ExperimentID = exp.ID
 		resp.Arm = arm
 		return v, nil

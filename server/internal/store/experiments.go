@@ -110,15 +110,17 @@ func (s *Store) SetExperimentStatus(ctx context.Context, id, status string) erro
 	return nil
 }
 
-// RecordAssignment inserts the result row created at render time (metrics still
-// null). It's idempotent on request_id: rendering the same request id twice
-// returns the existing arm rather than double-counting.
-func (s *Store) RecordAssignment(ctx context.Context, r model.Result) error {
+// RecordUsage inserts the result row created at render time (metrics still null).
+// It records EVERY render for per-version analytics; experiment_id and arm are set
+// only when the render was assigned by a running experiment (empty strings become
+// SQL NULL via NULLIF). It's idempotent on request_id, so rendering the same
+// request id twice never double-counts.
+func (s *Store) RecordUsage(ctx context.Context, r model.Result) error {
 	const q = `
-		INSERT INTO experiment_results (experiment_id, version_id, request_id, arm)
-		VALUES ($1,$2,$3,$4)
+		INSERT INTO experiment_results (prompt_id, experiment_id, version_id, request_id, arm)
+		VALUES ($1, NULLIF($2,'')::uuid, $3, $4, NULLIF($5,''))
 		ON CONFLICT (request_id) DO NOTHING`
-	_, err := s.pool.Exec(ctx, q, r.ExperimentID, r.VersionID, r.RequestID, r.Arm)
+	_, err := s.pool.Exec(ctx, q, r.PromptID, r.ExperimentID, r.VersionID, r.RequestID, r.Arm)
 	return err
 }
 

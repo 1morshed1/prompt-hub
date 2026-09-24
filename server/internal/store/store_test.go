@@ -2,45 +2,24 @@ package store_test
 
 import (
 	"context"
-	"os"
 	"testing"
 
-	"github.com/1morshed1/prompt-hub/server/internal/db"
 	"github.com/1morshed1/prompt-hub/server/internal/model"
 	"github.com/1morshed1/prompt-hub/server/internal/store"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/1morshed1/prompt-hub/server/internal/testutil"
 )
 
 // These are integration tests: they run against a real Postgres so the SQL,
 // constraints, and transaction logic are exercised for real (not mocked). Point
 // TEST_DATABASE_URL at a throwaway database; if it's unset the tests skip, so
-// `go test ./...` still works in environments without a DB.
-func newTestStore(t *testing.T) (*store.Store, *pgxpool.Pool) {
-	t.Helper()
-	url := os.Getenv("TEST_DATABASE_URL")
-	if url == "" {
-		t.Skip("set TEST_DATABASE_URL to run store integration tests")
-	}
-	ctx := context.Background()
-	pool, err := db.Connect(ctx, url)
-	if err != nil {
-		t.Fatalf("connect: %v", err)
-	}
-	if err := db.Migrate(ctx, pool); err != nil {
-		t.Fatalf("migrate: %v", err)
-	}
-	// Clean slate: TRUNCATE cascades through the FK graph.
-	_, err = pool.Exec(ctx, `TRUNCATE prompts, prompt_versions, prompt_tags,
-		experiments, experiment_results RESTART IDENTITY CASCADE`)
-	if err != nil {
-		t.Fatalf("truncate: %v", err)
-	}
-	t.Cleanup(pool.Close)
-	return store.New(pool), pool
+// `go test ./...` still works in environments without a DB. testutil.Setup
+// serializes DB access across packages so parallel test runs don't collide.
+func newTestStore(t *testing.T) *store.Store {
+	return testutil.Setup(t)
 }
 
 func TestPromptCRUD(t *testing.T) {
-	s, _ := newTestStore(t)
+	s := newTestStore(t)
 	ctx := context.Background()
 
 	p, err := s.CreatePrompt(ctx, model.Prompt{Name: "order-assistant", Description: "helps with orders"})
@@ -67,7 +46,7 @@ func TestPromptCRUD(t *testing.T) {
 }
 
 func TestVersioningIsMonotonic(t *testing.T) {
-	s, _ := newTestStore(t)
+	s := newTestStore(t)
 	ctx := context.Background()
 	p, _ := s.CreatePrompt(ctx, model.Prompt{Name: "p"})
 
@@ -107,7 +86,7 @@ func TestVersioningIsMonotonic(t *testing.T) {
 }
 
 func TestTagsAndRollback(t *testing.T) {
-	s, _ := newTestStore(t)
+	s := newTestStore(t)
 	ctx := context.Background()
 	p, _ := s.CreatePrompt(ctx, model.Prompt{Name: "p"})
 	v1, _ := s.CreateVersion(ctx, model.Version{PromptID: p.ID, UserTemplate: "v1"})

@@ -3,33 +3,16 @@ package experiment_test
 import (
 	"context"
 	"fmt"
-	"os"
 	"testing"
 
-	"github.com/1morshed1/prompt-hub/server/internal/db"
 	"github.com/1morshed1/prompt-hub/server/internal/experiment"
 	"github.com/1morshed1/prompt-hub/server/internal/model"
 	"github.com/1morshed1/prompt-hub/server/internal/store"
+	"github.com/1morshed1/prompt-hub/server/internal/testutil"
 )
 
 func newStore(t *testing.T) *store.Store {
-	t.Helper()
-	url := os.Getenv("TEST_DATABASE_URL")
-	if url == "" {
-		t.Skip("set TEST_DATABASE_URL to run experiment integration tests")
-	}
-	ctx := context.Background()
-	pool, err := db.Connect(ctx, url)
-	if err != nil {
-		t.Fatalf("connect: %v", err)
-	}
-	if err := db.Migrate(ctx, pool); err != nil {
-		t.Fatalf("migrate: %v", err)
-	}
-	_, _ = pool.Exec(ctx, `TRUNCATE prompts, prompt_versions, prompt_tags,
-		experiments, experiment_results RESTART IDENTITY CASCADE`)
-	t.Cleanup(pool.Close)
-	return store.New(pool)
+	return testutil.Setup(t)
 }
 
 // TestFullExperimentFlow drives assignment -> result logging -> analysis ->
@@ -69,7 +52,7 @@ func TestFullExperimentFlow(t *testing.T) {
 	logArm := func(arm, versionID string, n, up, latency int) {
 		for i := 0; i < n; i++ {
 			reqID := uuid()
-			if err := s.RecordAssignment(ctx, model.Result{
+			if err := s.RecordUsage(ctx, model.Result{PromptID: p.ID, 
 				ExperimentID: exp.ID, VersionID: versionID, RequestID: reqID, Arm: arm,
 			}); err != nil {
 				t.Fatalf("record assignment: %v", err)
@@ -135,11 +118,11 @@ func TestAutoPromoteRespectsMinSamples(t *testing.T) {
 	// Only a handful of lopsided samples: significant-looking but below min_samples.
 	for i := 0; i < 5; i++ {
 		r := uuid()
-		_ = s.RecordAssignment(ctx, model.Result{ExperimentID: exp.ID, VersionID: v1.ID, RequestID: r, Arm: experiment.ArmControl})
+		_ = s.RecordUsage(ctx, model.Result{PromptID: p.ID, ExperimentID: exp.ID, VersionID: v1.ID, RequestID: r, Arm: experiment.ArmControl})
 		down := 0
 		_ = s.LogResult(ctx, model.Result{RequestID: r, UserRating: &down})
 		r2 := uuid()
-		_ = s.RecordAssignment(ctx, model.Result{ExperimentID: exp.ID, VersionID: v2.ID, RequestID: r2, Arm: experiment.ArmVariant})
+		_ = s.RecordUsage(ctx, model.Result{PromptID: p.ID, ExperimentID: exp.ID, VersionID: v2.ID, RequestID: r2, Arm: experiment.ArmVariant})
 		up := 1
 		_ = s.LogResult(ctx, model.Result{RequestID: r2, UserRating: &up})
 	}
