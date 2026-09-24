@@ -1,0 +1,19 @@
+# Local dev Postgres cluster data (created by scripts/dev_db.sh)
+.pgdata/
+
+# Go build output
+/server/bin/
+*.out
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
