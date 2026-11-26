@@ -37,7 +37,7 @@ client-side?
 ### 2. Split `get()` from `render()`
 
 `hub.get(name, tag=...)` returns a lightweight `Prompt` handle; `.render(**vars)`
-does the network call. This mirrors the plan's ergonomics and lets you hold one
+does the network call. This mirrors the spec's ergonomics and lets you hold one
 handle and render it many times (e.g. per request in a loop) without repeating the
 selector.
 

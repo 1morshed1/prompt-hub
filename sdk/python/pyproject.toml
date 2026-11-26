@@ -20,3 +20,11 @@ dev = ["pytest>=7.0"]
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["prompthub*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["E501"]  # the formatter owns line length

@@ -22,7 +22,10 @@ hub = PromptHub(base_url="http://localhost:8080", project="customer-support")
 # Fetch + render the production version. Templating happens server-side, so you
 # always get the exact text the platform recorded.
 rendered = hub.get("order-assistant", tag="production").render(
-    role="support agent", topic="refunds", query="Where is my order?", language="en",
+    role="support agent",
+    topic="refunds",
+    query="Where is my order?",
+    language="en",
 )
 
 # rendered.messages is ready for any chat LLM:
@@ -43,14 +46,21 @@ The same client can script the platform (used by `scripts/seed.py`):
 
 ```python
 hub.create_prompt("order-assistant", description="helps with orders")
-hub.create_version("order-assistant",
+hub.create_version(
+    "order-assistant",
     system_template="You are a {{role}} assistant.",
     user_template="About {{topic}}: {{query}}",
-    variables=[{"name": "role", "type": "string", "required": True}, ...])
-hub.set_tag("order-assistant", "production", 1)          # deploy
-hub.rollback("order-assistant", "production", 1)         # roll back (same op)
-exp = hub.create_experiment("order-assistant", control_version=1, variant_version=2,
-                            auto_promote=True, min_samples=100)
+    variables=[{"name": "role", "type": "string", "required": True}, ...],
+)
+hub.set_tag("order-assistant", "production", 1)  # deploy
+hub.rollback("order-assistant", "production", 1)  # roll back (same op)
+exp = hub.create_experiment(
+    "order-assistant",
+    control_version=1,
+    variant_version=2,
+    auto_promote=True,
+    min_samples=100,
+)
 print(hub.experiment_report(exp["id"]))
 print(hub.analytics("order-assistant"))
 ```

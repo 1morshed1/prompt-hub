@@ -1,6 +1,6 @@
 -- 0002_render_analytics.sql
 --
--- Motivation: the plan calls for per-prompt analytics (latency / cost / token
+-- Motivation: the spec calls for per-prompt analytics (latency / cost / token
 -- usage and satisfaction trend PER VERSION), not only for versions under an A/B
 -- test. To support that, EVERY render records a usage row — even when no
 -- experiment is running — so we can aggregate metrics per version regardless.

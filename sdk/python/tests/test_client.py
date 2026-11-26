@@ -11,7 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from prompthub import PromptHub, NotFoundError, ValidationError, APIError
+from prompthub import APIError, NotFoundError, PromptHub, ValidationError
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -50,20 +50,23 @@ class _Handler(BaseHTTPRequestHandler):
         self.server.requests.append(("POST", self.path, body))
         if self.path.endswith("/render"):
             # Echo back a rendered payload; include experiment fields.
-            self._send(200, {
-                "prompt_name": "order-assistant",
-                "version_number": 2,
-                "system": "You are a support assistant.",
-                "user": f"About {body['variables'].get('topic')}: {body['variables'].get('query')}",
-                "model_config": {"model": "gpt-4o", "temperature": 0.3},
-                "request_id": "req-123",
-                "experiment_id": "exp-1",
-                "arm": "variant",
-            })
+            self._send(
+                200,
+                {
+                    "prompt_name": "order-assistant",
+                    "version_number": 2,
+                    "system": "You are a support assistant.",
+                    "user": f"About {body['variables'].get('topic')}: {body['variables'].get('query')}",
+                    "model_config": {"model": "gpt-4o", "temperature": 0.3},
+                    "request_id": "req-123",
+                    "experiment_id": "exp-1",
+                    "arm": "variant",
+                },
+            )
         elif self.path == "/api/v1/results":
             self._send(200, {"status": "logged"})
         elif "/render-invalid" in self.path:
-            self._send(422, {"error": "variable validation failed: \"query\" is required"})
+            self._send(422, {"error": 'variable validation failed: "query" is required'})
         else:
             self._send(201, {"created": True, "echo": body})
 

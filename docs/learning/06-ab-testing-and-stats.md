@@ -112,7 +112,7 @@ implementation is *pinned* to a trusted reference, not merely "looks about right
 
 ## Why implement it by hand?
 
-Because the statistics are the product's intellectual core, and a reader (or interviewer)
+Because the statistics are the product's intellectual core, and a reader
 should be able to open one file and see precisely how "significant" is computed, with the
 assumptions written next to the code. The full argument is in
 [ADR-0004](../decisions/0004-statistics-from-scratch.md).

@@ -1,5 +1,8 @@
 # PromptHub
 
+[![CI](https://github.com/1morshed1/prompt-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/1morshed1/prompt-hub/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 > **Git + LaunchDarkly for LLM prompts.** A platform where prompts are first-class,
 > version-controlled entities with performance analytics, A/B testing, and instant rollback.
 
@@ -7,7 +10,7 @@ PromptHub solves a problem every AI team hits: prompts live as scattered Python 
 with no version history, no performance tracking, and no safe way to change them. When a
 system prompt edit drops accuracy 15%, nobody knows *when* it happened or *who* changed *what*.
 
-This repo is built to be **read as a learning project**. Every non-trivial decision is
+Every non-trivial decision is
 written down in [`docs/decisions/`](docs/decisions/) (Architecture Decision Records) and
 every subsystem has a walkthrough in [`docs/learning/`](docs/learning/). Start there.
 
@@ -109,7 +112,7 @@ also part of the material: each commit ships one subsystem with its learning doc
   (AI *engineers*) reads Go comfortably. ([ADR-0001](docs/decisions/0001-language-and-stack.md))
 - **PostgreSQL** — immutable version rows + JSONB for flexible model config / metrics.
   ([ADR-0002](docs/decisions/0002-immutable-versioning.md))
-- **Hand-written template engine** — the plan needs custom `{% %}` syntax and this is the
+- **Hand-written template engine** — the spec needs custom `{% %}` syntax and this is the
   most instructive part of the codebase. ([ADR-0003](docs/decisions/0003-template-engine.md))
 - **Hand-written statistics** — no scientific-computing dependency in a Go service; the
   math is the teaching point. ([ADR-0004](docs/decisions/0004-statistics-from-scratch.md))
@@ -118,5 +121,9 @@ also part of the material: each commit ships one subsystem with its learning doc
 
 ---
 
-*Built as a portfolio + learning project. Follow the commit history — each commit ships one
-subsystem together with its learning doc.*
+*Follow the commit history — each commit ships one subsystem together with its
+design doc.*
+
+## License
+
+[MIT](LICENSE)

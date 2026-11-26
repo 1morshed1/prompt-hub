@@ -6,8 +6,8 @@
 ## Context
 
 We need to build an API server, a template engine, statistical analysis, a client SDK, and a
-dashboard. The audience is *AI engineers* — the people who would run this tool. The project
-also has to double as a portfolio piece that demonstrates infrastructure maturity.
+dashboard. The audience is *AI engineers* — the people who would run this tool. It also has
+to be operable like real infrastructure.
 
 ## Decision
 

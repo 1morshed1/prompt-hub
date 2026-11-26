@@ -7,7 +7,7 @@
 
 Real production prompts are not strings. They contain conditional sections ("if the user's
 language is Bengali, prepend the Bengali safety preamble"), loops (over retrieved documents),
-and shared includes (a safety preamble reused across many prompts). The plan specifies this
+and shared includes (a safety preamble reused across many prompts). The spec specifies this
 syntax explicitly:
 
 ```

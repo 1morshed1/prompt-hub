@@ -33,7 +33,7 @@ experiment returned a `request_id`, but calling `log_result(request_id, ...)`
 returned 404. The render path only recorded a row when an experiment assigned the
 request — so there was nothing to attach metrics to otherwise.
 
-**Decision:** the plan wants **per-prompt analytics for every version**, not only
+**Decision:** the spec wants **per-prompt analytics for every version**, not only
 versions under test. So the right fix wasn't "make log_result tolerate a missing
 row" — it was "record *every* render." Migration 0002 made `experiment_id`/`arm`
 nullable and added `prompt_id` to the results table; `RecordUsage` now writes a row

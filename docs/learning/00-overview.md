@@ -1,8 +1,8 @@
 # 00 — Overview: what we're building and why
 
-This folder is a **course in disguise**. Each file walks through one subsystem of PromptHub,
+Each file in this folder walks through one subsystem of PromptHub,
 explains the problem it solves, the design we chose, and the actual code — so you can rebuild
-it yourself or explain it in an interview.
+it yourself.
 
 Read them in order:
 

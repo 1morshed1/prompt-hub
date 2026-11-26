@@ -31,7 +31,7 @@ Abramowitz & Stegun 7.1.26 approximation.
 
 Go has no batteries-included scientific stack, and adding a heavyweight numeric dependency to a
 serving binary is a poor trade. More importantly: **the statistics are the intellectual core of
-the product's value proposition.** A reader (or interviewer) should be able to open one file
+the product's value proposition.** A reader should be able to open one file
 and see exactly how significance is computed, with the assumptions written down next to the
 code. That's worth more than a one-line import.
 

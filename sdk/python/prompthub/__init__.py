@@ -23,8 +23,8 @@ The SDK is pure standard library (no third-party dependencies), so it installs
 and runs anywhere. See docs/learning/07-python-sdk.md for the design rationale.
 """
 
-from .client import PromptHub, Prompt, RenderedPrompt
-from .errors import PromptHubError, NotFoundError, ValidationError, APIError
+from .client import Prompt, PromptHub, RenderedPrompt
+from .errors import APIError, NotFoundError, PromptHubError, ValidationError
 
 __all__ = [
     "PromptHub",

@@ -64,7 +64,7 @@ class Prompt:
     """A lazy handle to a prompt + version selector.
 
     ``hub.get(...)`` returns one of these; calling :meth:`render` actually hits the
-    server. Splitting fetch from render mirrors the plan's ergonomics
+    server. Splitting fetch from render mirrors the spec's ergonomics
     (``hub.get(name, tag=...).render(**vars)``) and lets you reuse one handle for
     many renders.
     """
@@ -134,8 +134,14 @@ class PromptHub:
 
     def create_prompt(self, name: str, description: str = "", created_by: str = "") -> dict:
         return self._request(
-            "POST", "/api/v1/prompts",
-            {"name": name, "project": self.project, "description": description, "created_by": created_by},
+            "POST",
+            "/api/v1/prompts",
+            {
+                "name": name,
+                "project": self.project,
+                "description": description,
+                "created_by": created_by,
+            },
         )
 
     def create_version(
@@ -150,7 +156,8 @@ class PromptHub:
         created_by: str = "",
     ) -> dict:
         return self._request(
-            "POST", f"/api/v1/prompts/{name}/versions",
+            "POST",
+            f"/api/v1/prompts/{name}/versions",
             {
                 "system_template": system_template,
                 "user_template": user_template,
@@ -164,7 +171,8 @@ class PromptHub:
     def set_tag(self, name: str, tag: str, version_number: int, updated_by: str = "") -> dict:
         """Point ``tag`` at ``version_number``. Deploy and rollback are the same call."""
         return self._request(
-            "PUT", f"/api/v1/prompts/{name}/tags/{tag}",
+            "PUT",
+            f"/api/v1/prompts/{name}/tags/{tag}",
             {"version_number": version_number, "updated_by": updated_by},
         )
 
@@ -180,7 +188,8 @@ class PromptHub:
 
     def diff(self, name: str, from_version: int, to_version: int, mode: str = "line") -> dict:
         return self._request(
-            "GET", f"/api/v1/prompts/{name}/diff?from={from_version}&to={to_version}&mode={mode}"
+            "GET",
+            f"/api/v1/prompts/{name}/diff?from={from_version}&to={to_version}&mode={mode}",
         )
 
     def create_experiment(
@@ -195,7 +204,8 @@ class PromptHub:
         min_samples: int = 100,
     ) -> dict:
         return self._request(
-            "POST", "/api/v1/experiments",
+            "POST",
+            "/api/v1/experiments",
             {
                 "prompt": prompt,
                 "name": name,
